@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#090909">
+    <title>MovieMatch | {{ page | title }}</title>
+    <!-- The stylesheet changes the design; app.py still handles accounts. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='cinema.css') }}">
+</head>
+<body class="{{ 'welcome-page' if page == 'welcome' else 'account-page' }}">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+    <a class="brand" href="{{ url_for('welcome') }}" aria-label="MovieMatch home">Movie<span>Match</span></a>
+    <nav aria-label="Main navigation">
+        {% if page == 'welcome' %}
+            <a href="#genres">Discover</a>
+            <a href="#how-it-works">How it works</a>
+            <a class="nav-login" href="{{ url_for('login') }}">Log In</a>
+        {% else %}
+            <a href="{{ url_for('welcome') }}">Home</a>
+        {% endif %}
+    </nav>
+</header>
+{% if page == 'welcome' %}
+<main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+        <!-- The artwork is a background; these words and buttons are real HTML. -->
+        <div class="hero-copy">
+            <p class="eyebrow">A WORLD OF STORIES. A MATCH FOR YOU.</p>
+            <h1 id="hero-title">Find your next <span>favorite.</span></h1>
+            <p class="tagline">Movie recommendations made for you.</p>
+            <div class="hero-actions">
+                <a class="button" href="{{ url_for('signup') }}">Sign Up <span aria-hidden="true">&#8594;</span></a>
+                <a class="button secondary" href="{{ url_for('login') }}">Log In</a>
+            </div>
+        </div>
+        <div class="genre-strip" id="genres" aria-label="A world of movie genres">
+            {% for genre in ['Sci-Fi', 'Romance', 'Adventure', 'Thriller', 'Animation'] %}
+            <figure>
+                <div class="genre-image genre-{{ loop.index }}" role="img" aria-label="Fictional {{ genre }} movie artwork"></div>
+                <figcaption>{{ genre }}</figcaption>
+            </figure>
+            {% endfor %}
+        </div>
+    </section>
+    <section class="how-it-works" id="how-it-works" aria-labelledby="how-title">
+        <p class="eyebrow">LESS SEARCHING. MORE DISCOVERY.</p>
+        <h2 id="how-title">Your next movie starts with you.</h2>
+        <div class="steps">
+            <article><span class="step-number">01</span><h3>Create your account</h3><p>Use a username or your email to make yourself at home.</p></article>
+            <article><span class="step-number">02</span><h3>Bring your favorites</h3><p>Your taste is the starting point for finding something new.</p></article>
+            <article><span class="step-number">03</span><h3>Discover your next story</h3><p>Personalized movie picks are coming next.</p></article>
+        </div>
+    </section>
+</main>
+{% else %}
+<main id="main" class="account-shell">
+<section class="account-card">
+    {% if page == "login" or page == "signup" %}
+        <h1>{{ 'Create your account' if page == 'signup' else 'Welcome back' }}</h1>
+        {% if error %}<p class="message error" role="alert">{{ error }}</p>{% endif %}
+        {% if created %}<p class="message success" role="status">Account created! You can now log in.</p>{% endif %}
+
+        <!-- POST sends these named fields to the current Flask route. -->
+        <form method="post">
+            <input type="hidden" name="form_token" value="{{ session['form_token'] }}">
+            <label for="username">Username or email</label>
+            <!-- type="text" allows either a username or an email address. -->
+            <input id="username" name="username" type="text" value="{{ username }}"
+                   autocomplete="username" maxlength="100" required>
+            {% if page == 'signup' %}<small>Choose a username, or use your email as your username.</small>{% endif %}
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" maxlength="128"
+                   autocomplete="{{ 'new-password' if page == 'signup' else 'current-password' }}"
+                   {% if page == 'signup' %}minlength="8"{% endif %} required>
+
+            {% if page == "signup" %}
+                <small>Use at least 8 characters.</small>
+                <label for="confirmation">Confirm password</label>
+                <input id="confirmation" name="confirmation" type="password"
+                       autocomplete="new-password" minlength="8" maxlength="128" required>
+            {% endif %}
+
+            <button type="submit">{{ 'Sign Up' if page == 'signup' else 'Log In' }}</button>
+        </form>
+        {% if page == "signup" %}
+            <p>Already registered? <a href="{{ url_for('login') }}">Log in</a></p>
+        {% else %}
+            <p>New here? <a href="{{ url_for('signup') }}">Create an account</a></p>
+        {% endif %}
+        <a href="{{ url_for('welcome') }}">Back to welcome screen</a>
+
+    {% elif page == "home" %}
+        <h1>Welcome, {{ session['username'] }}!</h1>
+        <p>You are logged in.</p>
+        <p>Your movie recommendations will appear here once the recommender is connected.</p>
+        <!-- Add your recommendation results here in a later step. -->
+        <form method="post" action="{{ url_for('logout') }}">
+            <input type="hidden" name="form_token" value="{{ session['form_token'] }}">
+            <button type="submit">Log Out</button>
+        </form>
+    {% endif %}
+</section>
+</main>
+{% endif %}
+<footer class="site-footer"><span class="footer-brand">MovieMatch</span><span>Made for the love of movies.</span></footer>
+</body>
+</html>
