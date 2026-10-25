@@ -1,11 +1,6 @@
 # Movie API Login
 
-## Home Screen Preview
+## Live website
 
-Click the picture to view it at full size.
+[Click here to open MovieMatch]https://moviematch-group7.onrender.com/
 
-[![MovieMatch home screen](cinema-preview.png)](cinema-preview.png)
-
-## Application Code
-
-[Download the Flask project](movie-login-demo.zip)
