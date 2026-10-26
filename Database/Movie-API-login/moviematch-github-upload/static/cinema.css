@@ -1,59 +1,53 @@
-/* Cinema Wall: change the colors here to customize the whole app. */
-:root { --red: #ef0827; --background: #090909; --muted: #b9b9c2; }
+/* Tiffany blue is the primary accent; dark gray is the secondary/background color. */
+:root { --accent: #81d8d0; --background: #28282c; --muted: #b9b9c2; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--background); color: white; font-family: Arial, Helvetica, sans-serif; }
+body { position: relative; isolation: isolate; margin: 0; background: var(--background); color: white; font-family: Arial, Helvetica, sans-serif; }
 a { color: inherit; }
 a, button, input { -webkit-tap-highlight-color: transparent; }
-:focus-visible { outline: 3px solid #ffd27b; outline-offset: 5px; }
+:focus-visible { outline: 3px solid #81d8d0; outline-offset: 5px; }
 .skip-link { position: absolute; top: -80px; left: 20px; z-index: 10; background: white; color: black; padding: 12px; }
 .skip-link:focus { top: 10px; }
-.site-header { position: absolute; inset: 0 0 auto; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px 4vw; background: linear-gradient(#000c, transparent); }
+.site-header { position: absolute; inset: 0 0 auto; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px 4vw; background: linear-gradient(#28282ce6, transparent); }
 .brand { font-size: clamp(26px, 3vw, 44px); font-weight: 900; letter-spacing: -2px; text-decoration: none; }
-.brand span, h1 span { color: var(--red); }
+.brand span, h1 span { color: var(--accent); }
 nav { display: flex; align-items: center; gap: 32px; }
 nav a { text-decoration: none; font-size: 14px; font-weight: 600; }
-nav a:hover { color: #ff6379; }
+nav a:hover { color: #81d8d0; }
 .nav-login { border: 1px solid #ffffff70; padding: 10px 20px; border-radius: 5px; }
-/* Layers above the poster picture keep the real text readable. */
-.hero { min-height: 760px; min-height: max(760px, 100svh); display: flex; flex-direction: column; justify-content: flex-end; padding: 300px 4vw 26px; background: linear-gradient(180deg, #0003 5%, #0000 27%, #0009 51%, #090909f2 80%, #090909 100%), url('cinema-wall.png') center top / cover no-repeat; }
-.hero-copy { text-align: center; max-width: 1300px; width: 100%; margin: 0 auto 42px; }
+/* Four separate images keep the actual movie posters easy to replace. */
+.poster-wall { position: absolute; z-index: -1; pointer-events: none; top: 0; left: 0; width: 100%; height: min(80vw, 820px); min-height: 480px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; overflow: hidden; }
+.poster-wall img { width: 100%; height: 100%; min-height: 0; object-fit: cover; object-position: center 20%; }
+.poster-wall::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #28282c44 0%, #28282c0a 26%, #28282caa 55%, #28282cf5 85%, #28282c 100%); }
+/* The gradient keeps white text and Tiffany blue buttons readable. */
+.hero { position: relative; min-height: max(720px, 100svh); display: flex; flex-direction: column; justify-content: flex-end; padding: 400px 4vw 80px; }
+.hero-copy { text-align: center; max-width: 1300px; width: 100%; margin: 0 auto; }
 .eyebrow { font-size: 11px; letter-spacing: 2.5px; font-weight: 700; color: #d8d8df; margin: 0 0 18px; }
 h1 { font-size: clamp(42px, 5.9vw, 92px); line-height: 1.04; letter-spacing: -3px; margin: 0 0 18px; font-weight: 900; text-wrap: balance; }
 .tagline { font-size: clamp(18px, 2vw, 25px); line-height: 1.5; color: #d2d2d9; margin: 0 0 28px; }
 .hero-actions { display: flex; justify-content: center; gap: 18px; }
-.button, button { min-height: 54px; padding: 15px 32px; background: var(--red); color: white; border: 1px solid var(--red); border-radius: 5px; font: 700 17px Arial, sans-serif; cursor: pointer; text-align: center; text-decoration: none; transition: background .18s, transform .18s; }
+.button, button { min-height: 54px; padding: 15px 32px; background: var(--accent); color: #202124; border: 1px solid var(--accent); border-radius: 5px; font: 700 17px Arial, sans-serif; cursor: pointer; text-align: center; text-decoration: none; transition: background .18s, transform .18s; }
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 20px; min-width: 220px; }
-.button:hover, button:hover { background: #ce0621; transform: translateY(-2px); }
-.secondary { background: #09090980; border: 1px solid #ffffffb3; }
-.secondary:hover { background: #ffffff19; }
-.genre-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; width: 100%; max-width: 1200px; margin: 0 auto; scroll-margin-top: 30px; }
-figure { margin: 0; min-width: 0; }
-/* Reuse the artwork as five small genre previews, without extra downloads. */
-.genre-image { height: clamp(70px, 8vw, 105px); border: 1px solid #ffffff26; border-radius: 5px; background-image: url('cinema-wall.png'); background-size: 500% auto; }
-.genre-1 { background-position: 0% 48%; }
-.genre-2 { background-position: 25% 48%; }
-.genre-3 { background-position: 50% 48%; }
-.genre-4 { background-position: 75% 48%; }
-.genre-5 { background-position: 100% 48%; }
-figcaption { text-align: center; padding-top: 12px; font-size: 14px; color: #c7c7d0; }
+.button:hover, button:hover { background: #a3e5df; transform: translateY(-2px); }
+.secondary { background: #28282c; color: var(--accent); border: 1px solid var(--accent); }
+.secondary:hover { background: #38383e; }
 .how-it-works { max-width: 1280px; margin: auto; padding: 80px 4vw; scroll-margin-top: 24px; }
 h2 { font-size: clamp(27px, 3vw, 40px); margin: 10px 0 36px; letter-spacing: -1px; }
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
 .steps article { border-top: 1px solid #ffffff20; padding-top: 24px; }
-.step-number { color: #ff4963; font-size: 13px; font-weight: bold; }
+.step-number { color: #81d8d0; font-size: 13px; font-weight: bold; }
 h3 { font-size: 19px; margin: 14px 0 10px; }
 .steps p { color: var(--muted); font-size: 15px; line-height: 1.7; margin: 0; }
 .site-footer { display: flex; justify-content: space-between; gap: 16px; padding: 28px 4vw; border-top: 1px solid #ffffff16; color: #92929d; font-size: 12px; }
 .footer-brand { font-weight: bold; color: #ddd; }
 /* Login, registration and the signed-in page use the same poster wall. */
-.account-page { background: linear-gradient(#0009, #090909f5), url('cinema-wall.png') center top / cover fixed; }
+.account-page .poster-wall { position: fixed; height: 100svh; opacity: .32; }
 .account-shell { min-height: calc(100svh - 72px); padding: 125px 20px 50px; display: grid; place-items: center; }
-.account-card { width: 100%; max-width: 460px; border: 1px solid #ffffff24; border-radius: 12px; background: #0a0a0af0; padding: 38px; box-shadow: 0 24px 90px #0008; }
+.account-card { width: 100%; max-width: 460px; border: 1px solid #ffffff24; border-radius: 12px; background: #28282cf5; padding: 38px; box-shadow: 0 24px 90px #0008; }
 .account-card h1 { font-size: 32px; line-height: 1.15; letter-spacing: -1px; overflow-wrap: anywhere; margin-bottom: 26px; }
 .account-card p { color: #c5c5cf; line-height: 1.6; font-size: 14px; }
 .account-card label { display: block; margin: 20px 0 9px; font-size: 14px; }
-.account-card input:not([type=hidden]) { display: block; width: 100%; border: 1px solid #707078; border-radius: 5px; background: #19191d; color: white; padding: 14px; font-size: 16px; }
+.account-card input:not([type=hidden]) { display: block; width: 100%; border: 1px solid #707078; border-radius: 5px; background: #333338; color: white; padding: 14px; font-size: 16px; }
 .account-card small { display: block; color: #ababba; font-size: 12px; line-height: 1.5; margin-top: 8px; }
 .account-card button { width: 100%; margin-top: 28px; }
 .account-card a { text-underline-offset: 4px; font-size: 14px; }
@@ -66,20 +60,78 @@ h3 { font-size: 19px; margin: 14px 0 10px; }
     nav { gap: 16px; }
     nav a { font-size: 12px; }
     nav .nav-login { display: none; }
-    .hero { min-height: 860px; padding: 310px 22px 28px; background-position: center top; }
+    .hero { min-height: 900px; padding: 600px 22px 54px; }
+    .poster-wall { top: 84px; height: 570px; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .poster-wall img { object-position: center 30%; }
     h1 { letter-spacing: -1.5px; }
     .hero-copy { margin-bottom: 32px; }
     .hero-actions { gap: 12px; }
     .button { min-width: 0; flex: 1; padding: 15px; }
-    .genre-strip { gap: 10px; grid-template-columns: repeat(3, 1fr); }
-    .genre-image { height: 65px; }
-    figcaption { font-size: 12px; padding-top: 7px; }
-    .steps { grid-template-columns: 1fr; gap: 26px; }
     .how-it-works { padding: 50px 22px; }
+    .steps { grid-template-columns: 1fr; gap: 28px; }
     .account-card { padding: 28px 22px; }
     .eyebrow { font-size: 9px; letter-spacing: 1.5px; }
 }
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     .button, button { transition: none; }
+}
+
+/* Bright edition: full posters, Tiffany background, orange highlights. */
+:root { --accent: #ff8545; --background: #81d8d0; --muted: #344b4c; }
+body { color: #28282c; }
+.site-header { position: relative; background: transparent; padding: 24px 4vw; }
+.brand span { color: #28282c; text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 5px; text-underline-offset: 6px; }
+nav a:hover { color: #713313; }
+.nav-login { border-color: #28282c; }
+:focus-visible { outline-color: #713313; }
+.hero { min-height: 0; padding: 16px 4vw 64px; display: block; }
+.poster-wall { position: relative; z-index: auto; top: auto; left: auto; height: auto; min-height: 0; width: 100%; max-width: 1320px; margin: 0 auto 40px; gap: clamp(8px, 1.5vw, 22px); grid-template-columns: repeat(5,minmax(0,1fr)); overflow: visible; }
+.poster-wall img { height: auto; aspect-ratio: 2 / 3; object-fit: contain; object-position: center; background: #28282c; border-radius: 10px; box-shadow: 0 10px 20px #25464530; }
+.poster-wall::after { display: none; }
+.hero-copy { margin: 0 auto; }
+.eyebrow { color: #344b4c; }
+h1 { font-size: clamp(38px,5.2vw,76px); }
+h1 span { color: #28282c; text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 6px; text-underline-offset: 8px; }
+.tagline { color: #344b4c; }
+.button:hover, button:hover { background: #ff9e6a; }
+.secondary { background: #28282c; border-color: #28282c; color: #a6eee6; }
+.secondary:hover { background: #3b3b40; }
+.how-it-works { padding-top: 48px; border-top: 1px solid #28282c30; }
+.steps article { border-color: #28282c30; }
+.step-number { color: #28282c; background: var(--accent); border-radius: 50%; padding: 9px; display: inline-block; }
+.site-footer { color: #344b4c; border-color: #28282c30; }
+.footer-brand { color: #28282c; }
+.account-shell { padding-top: 30px; min-height: calc(100svh - 170px); }
+.account-card { background: #e4f8f5; border-color: #28282c30; box-shadow: 0 24px 60px #25464525; }
+.account-card p, .account-card small { color: #344b4c; }
+.account-card input:not([type=hidden]) { background: #fff; color: #28282c; border-color: #587d7b; }
+@media (max-width: 700px) {
+ .site-header { padding: 22px; }
+ .hero { min-height: 0; padding: 10px 20px 40px; }
+ .poster-wall { top: auto; height: auto; grid-template-columns: repeat(5,minmax(0,1fr)); grid-template-rows: auto; gap: 6px; margin-bottom: 30px; }
+ .poster-wall img { object-position: center; border-radius: 5px; }
+ .hero-copy { margin-bottom: 0; }
+ .hero-actions { flex-wrap: wrap; }
+ .site-footer { flex-wrap: wrap; }
+}
+
+@media(max-width:700px){ .button { font-size:15px; padding:14px 10px; gap:8px; white-space:nowrap; } }
+
+/* Cinema wall: gently angled, complete posters with readable movie names. */
+.hero { padding: 20px 3vw 64px; }
+.poster-wall { max-width: 1600px; gap: clamp(10px,1.8vw,30px); padding: 22px 12px 12px; margin-bottom: 30px; align-items: center; }
+.movie-poster { margin: 0; min-width: 0; transform: rotate(-3deg); }
+.movie-poster:nth-child(2) { transform: rotate(2deg) translateY(-10px); }
+.movie-poster:nth-child(3) { transform: translateY(-18px); }
+.movie-poster:nth-child(4) { transform: rotate(-2deg) translateY(-10px); }
+.movie-poster:nth-child(5) { transform: rotate(3deg); }
+.poster-wall img { display: block; width: 100%; height: auto; aspect-ratio: 2/3; object-fit: contain; border-radius: 4px; box-shadow: 0 12px 22px #28282c35; }
+.movie-poster figcaption { font-size: clamp(12px,1.1vw,17px); font-weight: 700; text-align: center; padding: 14px 0 4px; line-height: 1.4; }
+.hero-copy { position: relative; padding-top: 10px; }
+@media(max-width:700px) {
+ .hero { padding: 12px 16px 40px; }
+ .poster-wall { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; pointer-events: auto; padding: 24px 12px 18px; gap: 18px; margin-bottom: 20px; }
+ .movie-poster { flex: 0 0 55%; scroll-snap-align: center; }
+ .movie-poster figcaption { font-size: 14px; }
 }
