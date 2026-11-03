@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#81d8d0">
+    <title>MovieMatch | {{ page | title }}</title>
+    <!-- The stylesheet changes the design; app.py still handles accounts. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='cinema.css', v='cinema-background-5') }}">
+</head>
+<body>
+    <header>
+        <nav aria-label="Main navigation">
+            <a class="nav-login" href="{{ url_for('recommendations') }}">Recommendations</a>
+            <a class="nav-login" href="{{ url_for('history') }}">History</a>
+            <a class="nav-login" href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+    </header>
+    
+</body>

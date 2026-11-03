@@ -4,6 +4,7 @@ from pathlib import Path
 from contextlib import closing
 import secrets
 import sqlite3
+import requests
 
 from flask import Flask, abort, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -11,7 +12,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 FOLDER = Path(__file__).resolve().parent
-DATABASE = FOLDER / "users.db"
+DATABASE = FOLDER / "system.db"
+API_KEY = "aasd"
+URL = f"https://api.themoviedb.org/3/movie/{MOVIE_ID}"
 
 # Flask signs its session cookies with this secret. Keep this file private.
 # Saving the secret means restarting the app does not log everyone out.
@@ -133,6 +136,12 @@ def home():
 def logout():
     session.clear()
     return redirect(url_for("welcome"))
+
+@app.route("/recommendations", methods=["GET", "POST"])
+def recommendations():
+    return render_template("recommendations.html")
+    
+    
 
 
 if __name__ == "__main__":
