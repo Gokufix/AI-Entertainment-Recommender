@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MovieMatch | Account recovery</title>
+<link rel="stylesheet" href="{{ url_for('static',filename='cinema.css',v='discovery-1') }}"></head>
+<body class="account-page">
+<header class="site-header"><a class="brand" href="{{ url_for('welcome') }}">Movie<span>Match</span></a>
+<nav><a href="{{ url_for('home') if g.user else url_for('login') }}">{{ 'Discover' if g.user else 'Log In' }}</a></nav></header>
+<main class="account-shell"><section class="account-card">
+{% if error %}<p class="message error" role="alert">{{ error }}</p>{% endif %}
+{% if success %}<p class="message success" role="status">{{ success }}</p>{% endif %}
+{% if page == 'forgot' %}
+<h1>Forgot your password?</h1>
+{% if sent %}<p class="message success" role="status">If an account uses that email, a reset link will arrive shortly. Check your inbox and spam folder.</p>
+{% else %}<p>Enter your account email. We’ll send you a link to choose a new password.</p>
+<form method="post"><input type="hidden" name="form_token" value="{{ session['form_token'] }}">
+<label for="email">Email address</label><input type="email" id="email" name="email" maxlength="254" autocomplete="email" required>
+<button type="submit">Send reset link</button></form>{% endif %}
+<p><a href="{{ url_for('login') }}">Back to Log In</a></p>
+{% elif page == 'reset' %}<h1>Choose a new password</h1><p>Enter your new password twice to make sure it matches.</p>
+<form method="post"><input type="hidden" name="form_token" value="{{ session['form_token'] }}">
+<label for="password">New password</label><input type="password" id="password" name="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+<small>Use at least 8 characters.</small>
+<label for="confirmation">Confirm new password</label><input type="password" id="confirmation" name="confirmation" autocomplete="new-password" minlength="8" maxlength="128" required>
+<button type="submit">Reset password</button></form>
+{% elif page == 'complete' %}<h1>Password reset!</h1><p role="status">You have reset your password. Go home and log in with your new password.</p>
+<p><a class="button" href="{{ url_for('welcome') }}">Go home</a></p><a href="{{ url_for('login') }}">Log in with new password</a>
+{% elif page == 'invalid' %}<h1>This link has expired</h1><p>The link is invalid, has expired, or has already been used. Request a new one below.</p>
+<a class="button" href="{{ url_for('forgot_password') }}">Get a new reset link</a>
+{% elif page == 'settings' %}<h1>Account settings</h1><p>Save an email address so you can recover your password.</p>
+<form method="post"><input type="hidden" name="form_token" value="{{ session['form_token'] }}">
+<label for="email">Recovery email</label><input id="email" name="email" type="email" maxlength="254" autocomplete="email" value="{{ g.user.email or '' }}" required>
+<label for="password">Current password</label><input id="password" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+<button type="submit">Save recovery email</button></form><p><a href="{{ url_for('home') }}">Back to Discover</a></p>
+{% endif %}
+</section></main></body></html>

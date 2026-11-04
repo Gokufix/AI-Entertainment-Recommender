@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#81d8d0">
     <title>MovieMatch | {{ page | title }}</title>
     <!-- The stylesheet changes the design; app.py still handles accounts. -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='cinema.css', v='cinema-background-5') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='cinema.css', v='discovery-1') }}">
 </head>
 <body class="{{ 'welcome-page' if page == 'welcome' else 'account-page' }}">
 <a class="skip-link" href="#main">Skip to content</a>
@@ -67,7 +67,10 @@
             <!-- type="text" allows either a username or an email address. -->
             <input id="username" name="username" type="text" value="{{ username }}"
                    autocomplete="username" maxlength="100" required>
-            {% if page == 'signup' %}<small>Choose a username, or use your email as your username.</small>{% endif %}
+            {% if page == 'signup' %}<small>Choose a username, or use your email as your username.</small>
+            <label for="email">Email address</label>
+            <input id="email" name="email" type="email" value="{{ email }}" autocomplete="email" maxlength="254" required>
+            <small>We use this address to send password-reset links.</small>{% endif %}
 
             <label for="password">Password</label>
             <input id="password" name="password" type="password" maxlength="128"
@@ -86,6 +89,7 @@
         {% if page == "signup" %}
             <p>Already registered? <a href="{{ url_for('login') }}">Log in</a></p>
         {% else %}
+            <p><a href="{{ url_for('forgot_password') }}">Forgot password?</a></p>
             <p>New here? <a href="{{ url_for('signup') }}">Create an account</a></p>
         {% endif %}
         <a href="{{ url_for('welcome') }}">Back to welcome screen</a>
