@@ -22,12 +22,9 @@ CREATE TABLE IF NOT EXISTS Users (
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Movies (
-    show_id INTEGER PRIMARY KEY,
-    movielens_id INTEGER UNIQUE,
+    movie_id INTEGER PRIMARY KEY,
     title VARCHAR(100),
-    genres VARCHAR(200),
-    description VARCHAR(200),
-    type VARCHAR(5)
+    genres VARCHAR(200)
 );
 """)
 
@@ -38,17 +35,17 @@ CREATE TABLE IF NOT EXISTS Movies (
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS Watched (
     user_id INTEGER,
-    show_id INTEGER,
+    movie_id INTEGER,
+    review REAL,
     watched_at DATETIME,
-    review VARCHAR(20),
 
-    PRIMARY KEY (user_id, show_id),
+    PRIMARY KEY (user_id, movie_id),
 
     FOREIGN KEY (user_id)
         REFERENCES Users(user_id),
 
-    FOREIGN KEY (show_id)
-        REFERENCES Movies(show_id)
+    FOREIGN KEY (movie_id)
+        REFERENCES Movies(movie_id)
 );
 """)
 
