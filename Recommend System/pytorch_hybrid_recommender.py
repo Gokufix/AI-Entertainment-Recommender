@@ -413,6 +413,14 @@ class HybridRecommender:
         """Return recommendations as a JSON-compatible dictionary."""
         results = self.recommend(user_id, number)
         records = json.loads(results.to_json(orient="records"))
+
+        for record in records:
+            record["Predicted Rating"] = round(
+                float(record["Predicted Rating"]), 2
+            )
+            record["Hybrid Score"] = round(
+                float(record["Hybrid Score"]), 4
+            )
         return {
             "user_id": user_id,
             "recommendation_count": len(records),

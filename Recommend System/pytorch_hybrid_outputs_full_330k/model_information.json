@@ -1,0 +1,26 @@
+{
+  "config": {
+    "factors": 32,
+    "learning_rate": 0.005,
+    "weight_decay": 1e-05,
+    "batch_size": 8192,
+    "epochs": 10,
+    "patience": 3
+  },
+  "metrics": {
+    "validation": {
+      "rmse": 0.9980645775794983,
+      "mae": 0.760165274143219,
+      "rows": 5074824
+    },
+    "test": {
+      "rmse": 0.9901688694953918,
+      "mae": 0.7517996430397034,
+      "rows": 5074825
+    },
+    "best_epoch": 1,
+    "train_rows": 23682513,
+    "validation_rows": 5074824,
+    "test_rows": 5074825
+  }
+}

@@ -1,3 +1,6 @@
 ratings_2_tmdb_ids_no_blanks.csv filter=lfs diff=lfs merge=lfs -text
 ratings_1_tmdb_ids_no_blanks.csv filter=lfs diff=lfs merge=lfs -text
 system.db filter=lfs diff=lfs merge=lfs -text
+Recommend[[:space:]]System/pytorch_hybrid_outputs_full_330k/pytorch_hybrid_model.pth filter=lfs diff=lfs merge=lfs -text
+Recommend[[:space:]]System/pytorch_hybrid_outputs_full_330k/catalog_embeddings.npy filter=lfs diff=lfs merge=lfs -text
+Recommend[[:space:]]System/pytorch_hybrid_outputs_full_330k/ratings_used.csv filter=lfs diff=lfs merge=lfs -text
