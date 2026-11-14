@@ -4,3 +4,4 @@ __pycache__/
 .venv/
 /Recommend System/ratings_1_tmdb_ids_no_blanks.csv
 /Recommend System/ratings_2_tmdb_ids_no_blanks.csv
+/Recommend System/system.db
