@@ -1,0 +1,405 @@
+
+/* MOVIEMATCH - DISCOVER PAGE */
+
+:root {
+    --charcoal: #414146;
+    --turquoise: #7dd6d0;
+    --background: #c4c4c4;
+    --card: #eeeeef;
+    --text: #25262c;
+    --muted: #555963;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* Header */
+
+.site-header {
+    background: var(--charcoal);
+    min-height: 110px;
+    padding: 24px 4%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    margin: 0;
+    color: #eeeeef;
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    text-decoration: none;
+}
+
+.logo span {
+    color: var(--turquoise);
+    text-decoration: underline;
+    text-underline-offset: 8px;
+}
+
+.home-link {
+    color: #eeeeef;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+.nav-link {
+    color: #eeeeef;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.home-link:hover {
+    color: var(--turquoise);
+}
+
+/* Page content */
+
+.discover-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 55px 35px 80px;
+}
+
+.discover-title {
+    font-size: 36px;
+    font-weight: 800;
+    margin: 0 0 12px;
+}
+
+.discover-subtitle {
+    color: var(--muted);
+    font-size: 16px;
+    margin: 0 0 35px;
+}
+
+/* Movie grid */
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(210px, 1fr)
+    );
+    gap: 25px;
+}
+
+/* Movie cards */
+
+.movie-card {
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.17);
+}
+
+.movie-card img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    background: #d8d8d8;
+}
+
+.movie-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 18px 16px 10px;
+}
+
+.movie-card p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--muted);
+    margin: 0 16px 14px;
+}
+
+.movie-card p:last-child {
+    color: var(--text);
+    font-weight: 700;
+    padding-bottom: 8px;
+}
+
+/* Loading animation */
+
+#loading {
+    text-align: center;
+    padding: 85px 20px;
+    color: var(--text);
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #e8e8e8;
+    border-top-color: var(--turquoise);
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error message */
+
+#error-message {
+    text-align: center;
+    padding: 25px;
+    color: #9d3030;
+}
+
+/* Footer */
+
+.site-footer {
+    border-top: 1px solid #b3b3b3;
+    padding: 22px 4%;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    font-size: 13px;
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+    .site-header {
+        min-height: 85px;
+        padding: 20px;
+    }
+
+    .logo {
+        font-size: 30px;
+    }
+
+    .discover-container {
+        padding: 35px 18px 60px;
+    }
+
+    .discover-title {
+        font-size: 28px;
+    }
+
+    .movie-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .movie-card h3 {
+        font-size: 15px;
+    }
+
+    .site-footer {
+        flex-direction: column;
+    }
+}
+
+/* Clickable movie cards */
+
+.movie-card {
+    cursor: pointer;
+}
+
+.movie-card:focus-visible {
+    outline: 3px solid #42bcb5;
+    outline-offset: 3px;
+}
+
+/* Modal background */
+
+.movie-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.movie-modal[hidden] {
+    display: none;
+}
+
+/* Modal window */
+
+.modal-content {
+    position: relative;
+    background: #eeeeef;
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 750px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: #414146;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: #42bcb5;
+}
+
+/* Poster and information */
+
+.modal-layout {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+}
+
+.modal-poster {
+    width: 220px;
+    max-width: 40%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.modal-information {
+    flex: 1;
+    min-width: 0;
+}
+
+.modal-information h2 {
+    font-size: 28px;
+    color: #25262c;
+    margin: 0 30px 15px 0;
+}
+
+#modal-genres {
+    color: #268f89;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+#modal-description {
+    line-height: 1.7;
+    color: #414146;
+}
+
+#modal-rating {
+    margin-top: 20px;
+    font-weight: 700;
+    color: #25262c;
+}
+
+/* Mobile layout */
+
+@media (max-width: 600px) {
+    .modal-content {
+        padding: 24px;
+    }
+
+    .modal-layout {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .modal-poster {
+        width: 170px;
+        max-width: 100%;
+    }
+
+    .modal-information h2 {
+        font-size: 23px;
+    }
+}
+
+/* WHERE TO WATCH */
+
+.watch-section {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #d0d0d0;
+}
+
+.watch-section h3 {
+    font-size: 20px;
+    margin-bottom: 18px;
+    color: #25262c;
+}
+
+.watch-section h4 {
+    font-size: 14px;
+    margin: 18px 0 10px;
+    color: #414146;
+}
+
+.provider-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.provider-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    width: 80px;
+    text-align: center;
+    font-size: 11px;
+    color: #414146;
+}
+
+.provider-item img {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+#watch-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 11px 16px;
+    background: #7dd6d0;
+    color: #25262c;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+#watch-link[hidden],
+#watch-loading[hidden] {
+    display: none;
+}
+
+.watch-credit {
+    margin-top: 16px;
+    font-size: 12px;
+    color: #555963;
+}

@@ -1,50 +1,485 @@
-{% macro cards(items, rail_id) %}
-<div class="rail-wrap">
-<button class="rail-arrow previous" type="button" data-rail="{{ rail_id }}" data-direction="-1" aria-label="Previous movies" aria-controls="{{ rail_id }}">&#8249;</button>
-<div class="movie-rail" id="{{ rail_id }}" tabindex="0" aria-label="Movie list. Scroll horizontally to browse.">
-{% for movie in items %}
-<a class="movie-card" href="{{ url_for('home',movie=movie.id) }}#recommendations" aria-label="Find movies similar to {{ movie.title }}">
-{% if movie.poster %}<img src="{{ url_for('static',filename='posters/'+movie.poster) }}" alt="{{ movie.title }} poster" loading="lazy" width="300" height="450">
-{% else %}<div class="poster-placeholder"><span class="film-icon" aria-hidden="true">&#9654;</span><strong>{{ movie.title }}</strong><small>Poster unavailable</small></div>{% endif %}
-<h3>{{ movie.title }}</h3><p>{{ movie.genre_label }}</p>
-</a>{% endfor %}
-</div>
-<button class="rail-arrow next" type="button" data-rail="{{ rail_id }}" data-direction="1" aria-label="Next movies" aria-controls="{{ rail_id }}">&#8250;</button>
-</div>
-{% endmacro %}
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MovieMatch | {{ 'History' if page == 'history' else 'Discover' }}</title>
-<link rel="stylesheet" href="{{ url_for('static',filename='discovery.css',v='1') }}">
-<script defer src="{{ url_for('static',filename='discovery.js',v='1') }}"></script></head>
-<body><a class="skip-link" href="#main">Skip to content</a>
-<header class="discovery-header">
-<a class="brand" href="{{ url_for('home') }}">Movie<span>Match</span></a>
-<nav aria-label="Main navigation"><a class="{{ 'active' if page == 'discover' }}" href="{{ url_for('home') }}" {{ 'aria-current=page' if page == 'discover' }}>Discover</a><a class="{{ 'active' if page == 'history' }}" href="{{ url_for('history') }}" {{ 'aria-current=page' if page == 'history' }}>History</a></nav>
-<div class="account-nav"><span class="username" title="{{ g.user.username }}">{{ g.user.username }}</span>
-<form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="form_token" value="{{ session['form_token'] }}"><button type="submit">Log Out</button></form>
-<a class="settings" href="{{ url_for('settings') }}" aria-label="Account settings">&#9881;</a></div>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Discover | MovieMatch</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/discover.css') }}">
+</head>
+
+<body>
+
+<header class="site-header">
+    <a href="/" class="logo">
+        Movie<span>Match</span>
+    </a>
+
+    <a href="/" class="home-link">Home</a>
+    <a href="{{ url_for('rate_page') }}" class="home-link">Rate Movies</a>
 </header>
-<main id="main">
-{% if not g.user.email %}<p class="account-notice">Add a recovery email so you can reset your password. <a href="{{ url_for('settings') }}">Open settings</a></p>{% endif %}
-{% if page == 'history' %}
-<section><div class="section-heading"><div><p class="eyebrow">YOUR DISCOVERIES</p><h1>Search <span>history</span></h1><p>Movies you explored here. Your streaming watch history is not connected.</p></div><a class="text-link" href="{{ url_for('home') }}">Back to Discover &#8594;</a></div>
-{% if results %}{{ cards(results,'history-rail') }}{% else %}<div class="empty-state"><h2>Your discoveries start here.</h2><p>Search for a movie on Discover, and it will appear here.</p><a href="{{ url_for('home') }}">Find a movie &#8594;</a></div>{% endif %}</section>
-{% else %}
-<section aria-labelledby="for-you-title"><div class="section-heading"><div><p class="eyebrow">A LITTLE INSPIRATION</p><h1 id="for-you-title">For <span>You</span></h1></div><span class="demo-badge">Discovery picks</span></div>
-<p class="section-note">Random movies to explore for now. Connect watch history in a future update for personalized picks.</p>
-{{ cards(picks,'for-you-rail') }}</section>
-<form class="search-form" action="{{ url_for('home') }}#recommendations" method="get" role="search">
-<label for="movie-search" class="sr-only">Search for a movie title</label>
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg>
-<input id="movie-search" name="q" type="search" placeholder="Search a movie you love…" value="{{ query }}" maxlength="150" required>
-<button type="submit">Find similar movies <span aria-hidden="true">&#8594;</span></button></form>
-<section id="recommendations" aria-labelledby="results-title" aria-live="polite">
-<div class="section-heading"><div><p class="eyebrow">YOUR NEXT WATCH</p><h2 id="results-title">{% if selected %}Because you searched <span>{{ selected.title }}</span>{% elif query %}Choose <span>your movie</span>{% else %}More movies. <span>Your kind.</span>{% endif %}</h2></div></div>
-{% if selected %}<p class="section-note">Similar movie text and genres. Select any movie to explore more like it.</p>{{ cards(results,'recommendation-rail') }}
-{% elif matches %}<p class="section-note">Select a title below to see its recommendations.</p>{{ cards(matches,'search-rail') }}
-{% elif query %}<div class="empty-state"><h3>No titles found for “{{ query }}”.</h3><p>Try a shorter title, such as “Toy Story”, “Star Wars”, or “The Matrix”.</p><small>The MovieLens catalog includes movies through 2018.</small></div>
-{% else %}<div class="empty-state"><span class="empty-icon" aria-hidden="true">&#10022;</span><h3>Start with a favorite.</h3><p>Search above or select a poster to find similar movies.</p><div class="suggestions"><a href="{{ url_for('home',q='Toy Story') }}#recommendations">Toy Story</a><a href="{{ url_for('home',q='Spider-Man') }}#recommendations">Spider-Man</a><a href="{{ url_for('home',q='Matrix') }}#recommendations">The Matrix</a></div></div>{% endif %}
-</section>
-{% endif %}
-</main><footer>MovieMatch <span>Made for the love of movies.</span><small>Movie data: MovieLens / GroupLens. Streaming availability is not provided.</small></footer>
-</body></html>
+
+<main class="discover-container">
+
+    <h1 class="discover-title">
+        Recommended For You
+    </h1>
+
+    <p class="discover-subtitle">
+        Movies picked just for you, powered by AI.
+    </p>
+
+    <div id="loading">
+        <div class="spinner"></div>
+        <p>Finding movies you'll love...</p>
+    </div>
+
+    <div class="movie-grid" id="movie-grid"></div>
+
+<!-- Movie details popup -->
+<div id="movie-modal" class="movie-modal" hidden>
+    <div class="modal-content"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="modal-title">
+
+        <button
+            id="close-modal"
+            class="modal-close"
+            type="button"
+            aria-label="Close movie details">
+            &times;
+        </button>
+
+        <div class="modal-layout">
+            <img
+                id="modal-poster"
+                class="modal-poster"
+                alt="Movie poster">
+
+            <div class="modal-information">
+                <h2 id="modal-title"></h2>
+
+                <p id="modal-genres"></p>
+
+                <p id="modal-description"></p>
+
+                <section class="watch-section">
+                    <h3>Where to Watch</h3>
+
+                    <p id="watch-loading" hidden>
+                        Checking streaming availability...
+                    </p>
+
+                    <div id="watch-providers"></div>
+
+                    <a
+                        id="watch-link"
+                        href="#"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        hidden>
+                        View watching options on TMDB
+                    </a>
+
+                    <p class="watch-credit">
+                        Streaming availability data provided by JustWatch.
+                    </p>
+                </section>
+
+                <p id="modal-rating"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <p id="error-message" style="display: none;">
+        Couldn't load recommendations.
+        Please try refreshing the page.
+    </p>
+
+</main>
+
+<footer class="site-footer">
+    <span>MovieMatch</span>
+    <span>Made for the love of movies.</span>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const loading = document.getElementById("loading");
+    const grid = document.getElementById("movie-grid");
+    const errorMessage =
+        document.getElementById("error-message");
+    
+    const modal = document.getElementById("movie-modal");
+    const closeModalButton = document.getElementById("close-modal");
+
+    let previousFocus = null;
+
+    function closeMovieModal() {
+        modal.hidden = true;
+        document.body.style.overflow = "";
+
+        if (previousFocus) {
+            previousFocus.focus();
+        }
+    }
+    
+
+    async function loadWatchProviders(movie) {
+        const container = document.getElementById("watch-providers");
+        const loading = document.getElementById("watch-loading");
+        const link = document.getElementById("watch-link");
+
+        container.replaceChildren();
+        loading.hidden = false;
+        link.hidden = true;
+
+        try {
+            const mediaType = movie.media_type || "movie";
+
+            const response = await fetch(
+                `/api/watch-providers/${mediaType}/${movie.movie_id}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Watch provider request failed");
+            }
+
+            const data = await response.json();
+
+            // Don't update the popup if another movie was opened
+            if (modal.hidden || modal.dataset.movieKey !==
+                `${mediaType}:${movie.movie_id}`) return;
+
+            const categories = [
+                ["Streaming", data.streaming],
+                ["Free", data.free],
+                ["With Ads", data.ads],
+                ["Rent", data.rent],
+                ["Buy", data.buy]
+            ];
+
+            let foundProviders = false;
+
+            for (const [label, providers] of categories) {
+                if (!providers || providers.length === 0) continue;
+
+                foundProviders = true;
+
+                const heading = document.createElement("h4");
+                heading.textContent = label;
+                container.appendChild(heading);
+
+                const row = document.createElement("div");
+                row.className = "provider-row";
+
+                for (const provider of providers) {
+                    const item = document.createElement("div");
+                    item.className = "provider-item";
+
+                    if (provider.logo) {
+                        const img = document.createElement("img");
+                        img.src = provider.logo;
+                        img.alt = provider.name;
+                        img.loading = "lazy";
+                        item.appendChild(img);
+                    }
+
+                    const name = document.createElement("span");
+                    name.textContent = provider.name;
+                    item.appendChild(name);
+
+                    row.appendChild(item);
+                }
+
+                container.appendChild(row);
+            }
+
+            if (!foundProviders) {
+                container.textContent =
+                    "No streaming availability listed for the US.";
+            }
+
+            if (data.link) {
+                link.href = data.link;
+                link.hidden = false;
+            }
+
+        } catch (error) {
+            console.error(error);
+            if (!modal.hidden &&
+                modal.dataset.movieKey ===
+                `${movie.media_type || "movie"}:${movie.movie_id}`) {
+                container.textContent =
+                    "Streaming availability is temporarily unavailable.";
+            }
+        } finally {
+            if (!modal.hidden &&
+                modal.dataset.movieKey ===
+                `${movie.media_type || "movie"}:${movie.movie_id}`) {
+                loading.hidden = true;
+            }
+        }
+    }
+
+
+    async function loadWatchProviders(movie) {
+        const container = document.getElementById("watch-providers");
+        const loading = document.getElementById("watch-loading");
+        const link = document.getElementById("watch-link");
+
+        container.replaceChildren();
+        loading.hidden = false;
+        link.hidden = true;
+
+        try {
+            const mediaType = movie.media_type || "movie";
+
+            const response = await fetch(
+                `/api/watch-providers/${mediaType}/${movie.movie_id}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Watch provider request failed");
+            }
+
+            const data = await response.json();
+
+            // Don't update the popup if another movie was opened
+            if (modal.hidden || modal.dataset.movieKey !==
+                `${mediaType}:${movie.movie_id}`) return;
+
+            const categories = [
+                ["Streaming", data.streaming],
+                ["Free", data.free],
+                ["With Ads", data.ads],
+                ["Rent", data.rent],
+                ["Buy", data.buy]
+            ];
+
+            let foundProviders = false;
+
+            for (const [label, providers] of categories) {
+                if (!providers || providers.length === 0) continue;
+
+                foundProviders = true;
+
+                const heading = document.createElement("h4");
+                heading.textContent = label;
+                container.appendChild(heading);
+
+                const row = document.createElement("div");
+                row.className = "provider-row";
+
+                for (const provider of providers) {
+                    const item = document.createElement("div");
+                    item.className = "provider-item";
+
+                    if (provider.logo) {
+                        const img = document.createElement("img");
+                        img.src = provider.logo;
+                        img.alt = provider.name;
+                        img.loading = "lazy";
+                        item.appendChild(img);
+                    }
+
+                    const name = document.createElement("span");
+                    name.textContent = provider.name;
+                    item.appendChild(name);
+
+                    row.appendChild(item);
+                }
+
+                container.appendChild(row);
+            }
+
+            if (!foundProviders) {
+                container.textContent =
+                    "No streaming availability listed for the US.";
+            }
+
+            if (data.link) {
+                link.href = data.link;
+                link.hidden = false;
+            }
+
+        } catch (error) {
+            console.error(error);
+            if (!modal.hidden &&
+                modal.dataset.movieKey ===
+                `${movie.media_type || "movie"}:${movie.movie_id}`) {
+                container.textContent =
+                    "Streaming availability is temporarily unavailable.";
+            }
+        } finally {
+            if (!modal.hidden &&
+                modal.dataset.movieKey ===
+                `${movie.media_type || "movie"}:${movie.movie_id}`) {
+                loading.hidden = true;
+            }
+        }
+    }
+
+
+
+    function openMovieModal(movie) {
+        previousFocus = document.activeElement;
+
+        const poster = document.getElementById("modal-poster");
+
+        if (movie.poster_url) {
+            poster.src = movie.poster_url;
+            poster.alt = `${movie.title} poster`;
+            poster.hidden = false;
+        } else {
+            poster.removeAttribute("src");
+            poster.hidden = true;
+        }
+
+        document.getElementById("modal-title").textContent =
+            movie.title || "Untitled";
+
+        document.getElementById("modal-genres").textContent =
+            Array.isArray(movie.genres) && movie.genres.length
+                ? movie.genres.join(" • ")
+                : "Genres unavailable";
+
+        document.getElementById("modal-description").textContent =
+            movie.overview || "No description available.";
+
+        document.getElementById("modal-rating").textContent =
+            typeof movie.rating === "number"
+                ? `TMDB Rating: ${movie.rating.toFixed(1)}/10`
+                : "TMDB Rating: N/A";
+
+        modal.hidden = false;
+        modal.dataset.movieKey =
+            `${movie.media_type || "movie"}:${movie.movie_id}`;
+
+        loadWatchProviders(movie);
+        document.body.style.overflow = "hidden";
+        closeModalButton.focus();
+    }
+
+    closeModalButton.addEventListener("click", closeMovieModal);
+
+    modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+            closeMovieModal();
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !modal.hidden) {
+            closeMovieModal();
+        }
+
+        // Keep keyboard focus inside the open dialog
+        if (event.key === "Tab" && !modal.hidden) {
+            const focusable = [
+                ...modal.querySelectorAll(
+                    'button:not([disabled]), a[href], input:not([disabled])'
+                )
+            ];
+
+            if (!focusable.length) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        }
+    });
+
+
+    try {
+        const response = await fetch("/api/recommendations");
+
+        if (!response.ok) {
+            throw new Error("Failed to load recommendations");
+        }
+
+        const data = await response.json();
+
+        for (const movie of data.movies) {
+            const card = document.createElement("div");
+            card.className = "movie-card";
+            card.tabIndex = 0;
+            card.setAttribute("role", "button");
+            card.setAttribute("aria-label", `View details for ${movie.title}`);
+
+            card.addEventListener("click", () => {
+                openMovieModal(movie);
+            });
+
+            card.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openMovieModal(movie);
+                }
+            });
+
+            if (movie.poster_url) {
+                const poster = document.createElement("img");
+                poster.src = movie.poster_url;
+                poster.alt = `${movie.title} poster`;
+                poster.loading = "lazy";
+                card.appendChild(poster);
+            }
+
+            const title = document.createElement("h3");
+            title.textContent = movie.title || "Untitled";
+            card.appendChild(title);
+
+            const overview = document.createElement("p");
+            const description = movie.overview || "";
+
+            overview.textContent =
+                description.length > 140
+                    ? description.slice(0, 140) + "..."
+                    : description;
+
+            card.appendChild(overview);
+
+            const rating = document.createElement("p");
+
+            rating.textContent =
+                "TMDB Rating: " +
+                (typeof movie.rating === "number"
+                    ? movie.rating.toFixed(1)
+                    : "N/A");
+
+            card.appendChild(rating);
+
+            grid.appendChild(card);
+        }
+
+        if (data.movies.length === 0) {
+            grid.textContent =
+                "No recommendations available yet.";
+        }
+
+    } catch (error) {
+        console.error(error);
+        errorMessage.style.display = "block";
+    } finally {
+        loading.style.display = "none";
+    }
+});
+</script>
+
+</body>
+</html>

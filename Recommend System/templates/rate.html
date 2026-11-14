@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="form-token" content="{{ session['form_token'] }}">
+
+    <title>Rate Movies | MovieMatch</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/rate.css') }}">
+</head>
+
+<body>
+    <header class="site-header">
+        <a class="logo" href="/discover">
+            Movie<span>Match</span>
+        </a>
+
+        <nav>
+            <a href="/discover">Discover</a>
+            <a href="/rate">Rate Movies</a>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <h1>Search & Rate Movies</h1>
+        <p>Find movies you have watched and tell us what you think.</p>
+
+        <input
+            type="search"
+            id="movie-search"
+            placeholder="Search for a movie..."
+            autocomplete="off"
+            aria-label="Search movies">
+
+        <p id="search-status" role="status"></p>
+
+        <div id="search-results" class="movie-grid"></div>
+    </main>
+
+    <script>
+    const searchInput = document.getElementById("movie-search");
+    const results = document.getElementById("search-results");
+    const status = document.getElementById("search-status");
+
+    let searchTimer;
+    let searchController;
+
+    searchInput.addEventListener("input", () => {
+        clearTimeout(searchTimer);
+
+        if (searchController) {
+            searchController.abort();
+        }
+
+        const query = searchInput.value.trim();
+        results.replaceChildren();
+
+        if (query.length < 2) {
+            status.textContent = "";
+            return;
+        }
+
+        searchTimer = setTimeout(() => searchMovies(query), 300);
+    });
+
+    async function searchMovies(query) {
+        searchController = new AbortController();
+
+        status.textContent = "Searching...";
+        try {
+            const response = await fetch(
+                `/api/search-movies?q=${encodeURIComponent(query)}`,
+                { signal: searchController.signal }
+            );
+
+            if (!response.ok) throw new Error("Search failed");
+
+            const data = await response.json();
+
+            if (searchInput.value.trim() !== query) return;
+
+            results.replaceChildren();
+
+            if (!data.movies.length) {
+                status.textContent = "No movies found.";
+                return;
+            }
+
+            status.textContent = "";
+
+            for (const movie of data.movies) {
+                renderMovie(movie);
+            }
+
+        } catch (error) {
+            if (error.name !== "AbortError") {
+                status.textContent = "Could not search movies.";
+            }
+        }
+    }
+
+    function renderMovie(movie) {
+        const card = document.createElement("div");
+        card.className = "movie-card";
+
+
+        const poster = document.createElement("img");
+
+        const defaultPoster = "/static/images/default-poster.webp";
+
+        poster.src = movie.poster_url || defaultPoster;
+        poster.alt = `${movie.title} poster`;
+        poster.loading = "lazy";
+
+        // Also handle broken image URLs
+        poster.onerror = function () {
+            poster.onerror = null;
+            poster.src = defaultPoster;
+        };
+
+        card.appendChild(poster);
+
+
+        const title = document.createElement("h3");
+        title.textContent = movie.title;
+        card.appendChild(title);
+
+        const year = document.createElement("p");
+        year.textContent = movie.release_date
+            ? movie.release_date.slice(0, 4)
+            : "";
+        card.appendChild(year);
+
+        const stars = document.createElement("div");
+        stars.className = "stars";
+
+        let selectedRating = 0;
+
+        const starButtons = [];
+
+        for (let i = 1; i <= 5; i++) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.textContent = "☆";
+            button.setAttribute("aria-label", `Rate ${i} stars`);
+
+            button.addEventListener("click", () => {
+                selectedRating = i;
+
+                starButtons.forEach((star, index) => {
+                    star.textContent =
+                        index < selectedRating ? "★" : "☆";
+                });
+            });
+
+            starButtons.push(button);
+            stars.appendChild(button);
+        }
+
+        card.appendChild(stars);
+
+        const saveButton = document.createElement("button");
+        saveButton.className = "save-rating";
+        saveButton.textContent = "Save Rating";
+
+        const message = document.createElement("p");
+        message.className = "rating-message";
+        message.setAttribute("role", "status");
+
+        saveButton.addEventListener("click", async () => {
+            if (!selectedRating) {
+                message.textContent = "Select a rating first.";
+                return;
+            }
+
+            console.log("Movie ID:", movie.movie_id);
+            console.log("Selected rating:", selectedRating);
+
+            saveButton.disabled = true;
+            message.textContent = "Saving...";
+
+            try {
+
+                const formToken = document.querySelector(
+                    'meta[name="form-token"]'
+                ).content;
+
+                const response = await fetch("/api/rate-movie", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Form-Token": formToken
+                    },
+                    body: JSON.stringify({
+                        movie_id: movie.movie_id,
+                        rating: selectedRating
+                    })
+                });
+
+
+                if (!response.ok) throw new Error("Save failed");
+
+                message.textContent = "Rating saved!";
+            } catch (error) {
+                message.textContent = "Could not save rating.";
+            } finally {
+                saveButton.disabled = false;
+            }
+        });
+
+        card.appendChild(saveButton);
+        card.appendChild(message);
+        results.appendChild(card);
+    }
+    </script>
+</body>
+</html>

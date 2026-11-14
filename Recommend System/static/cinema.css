@@ -202,8 +202,3 @@ body { background: var(--background); color: #28282c; }
 .account-card { background: #ededee; }
 .account-card p, .account-card small, .eyebrow, .tagline, .site-footer { color: #45454b; }
 .account-page .site-header { background: #45454b; color: #e4e4e7; }
-
-/* Account forms on the silver-gray canvas. */
-.account-card input:not([type=hidden]) { background:#fafafa; color:#28282c; border-color:#929299; }
-.account-card .button {min-width:0;max-width:100%;white-space:normal;}
-.account-card form + p {margin-top:22px;}
