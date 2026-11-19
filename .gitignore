@@ -5,3 +5,7 @@ __pycache__/
 /Recommend System/ratings_1_tmdb_ids_no_blanks.csv
 /Recommend System/ratings_2_tmdb_ids_no_blanks.csv
 /Recommend System/system.db
+.session_secret
+/Recommend System/.session_secret
+/Recommend System/pytorch_hybrid_outputs_full/
+*.zip.tmp
