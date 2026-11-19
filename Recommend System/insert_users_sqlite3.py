@@ -1,6 +1,6 @@
 """Fast import of synthetic users for a NEW, empty SQLite Users table.
 
-Run database_corrected.py first, then this script, then the ratings importer.
+Run database.py first, then this script, then the ratings importer.
 The passwords are non-authenticating placeholders, NOT suitable for login.
 """
 import csv
@@ -16,7 +16,7 @@ BATCH_SIZE = 10_000
 
 def main():
     if not DB.is_file():
-        raise SystemExit('system.db not found. Run database_corrected.py first.')
+        raise SystemExit('system.db not found. Run database.py first.')
 
     ids = set()
     for path in RATINGS:
@@ -35,7 +35,7 @@ def main():
     with sqlite3.connect(DB) as conn:
         conn.execute('PRAGMA foreign_keys = ON')
         if not conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='Users'").fetchone():
-            raise SystemExit('Users table missing. Run database_corrected.py first.')
+            raise SystemExit('Users table missing. Run database.py first.')
         if conn.execute('SELECT EXISTS(SELECT 1 FROM Users)').fetchone()[0]:
             raise SystemExit('Users table is not empty; refusing to mix synthetic users with existing accounts.')
         statement = 'INSERT INTO Users (user_id, username, email, password) VALUES (?, ?, ?, ?)'

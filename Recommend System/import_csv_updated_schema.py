@@ -1,8 +1,9 @@
 """Import TMDB movies and MovieLens ratings into corrected database schema.
 
 Usage:
-  python database_corrected.py
-  python import_csv_updated_schema.py --create-placeholder-users
+  python database.py
+  python insert_users_sqlite3.py
+  python import_csv_updated_schema.py
 
 WARNING: --create-placeholder-users creates non-login placeholder Users records
 for MovieLens user IDs. Do not use on an existing application database where
@@ -37,7 +38,7 @@ def main():
         conn.execute('PRAGMA foreign_keys=ON')
         for name in ('Users', 'Movies', 'Watched'):
             if not conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (name,)).fetchone():
-                parser.error(f'{name} table missing: run database_corrected.py first')
+                parser.error(f'{name} table missing: run database.py first')
         cols = {r[1] for r in conn.execute('PRAGMA table_info(Watched)')}
         if not {'user_id', 'movie_id', 'review', 'watched_at'} <= cols:
             parser.error('Watched table does not match corrected schema. Use a fresh database.')

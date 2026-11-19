@@ -19,6 +19,7 @@ import random
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable
+from zipfile import ZIP_DEFLATED, ZipFile
 
 import numpy as np
 import pandas as pd
@@ -789,6 +790,53 @@ def save_artifacts(
         encoding="utf-8",
     )
 
+
+def package_artifacts(output: str | Path, archive: str | Path | None = None) -> Path:
+    """Create one ZIP containing everything needed for inference and review."""
+    output = Path(output).resolve()
+    if not output.is_dir():
+        raise FileNotFoundError(f"Artifact directory not found: {output}")
+
+    # Refuse to create a misleading partial archive. These five files are the
+    # minimum required by load_engine() for recommendation inference.
+    required = {
+        "pytorch_hybrid_model.pth",
+        "catalog.csv",
+        "ratings_used.csv",
+        "catalog_embeddings.npy",
+        "model_information.json",
+    }
+    missing = sorted(name for name in required if not (output / name).is_file())
+    if missing:
+        raise FileNotFoundError(
+            "Cannot package incomplete artifacts. Missing: " + ", ".join(missing)
+        )
+
+    archive_path = (
+        Path(archive).resolve()
+        if archive
+        else output.with_name(output.name + ".zip")
+    )
+    archive_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = archive_path.with_suffix(archive_path.suffix + ".tmp")
+
+    # ZIP64 is required because the completed archive may exceed 2 GB.
+    # Write to a temporary name first so an interrupted run cannot replace a
+    # previously valid artifact archive with an incomplete file.
+    with ZipFile(
+        temporary,
+        mode="w",
+        compression=ZIP_DEFLATED,
+        compresslevel=6,
+        allowZip64=True,
+    ) as bundle:
+        for path in sorted(output.iterdir()):
+            if path.is_file():
+                bundle.write(path, arcname=f"{output.name}/{path.name}")
+
+    temporary.replace(archive_path)
+    return archive_path
+
 def load_training_checkpoint(output, device):
     checkpoint = torch.load(
         Path(output) / "pytorch_hybrid_model.pth",
@@ -937,6 +985,13 @@ def recommend_command(args: argparse.Namespace) -> None:
     engine = load_engine(args.output)
     output = engine.get_recommendations(args.user, args.number)
     print(json.dumps(output, indent=4))
+
+
+def package_command(args: argparse.Namespace) -> None:
+    archive = package_artifacts(args.output, args.archive)
+    size_mb = archive.stat().st_size / (1024 * 1024)
+    print(f"Artifact ZIP created: {archive}")
+    print(f"Archive size: {size_mb:,.2f} MB")
 
 def update_command(args):
     output = Path(args.output)
@@ -1126,6 +1181,16 @@ def make_parser() -> argparse.ArgumentParser:
     recommend_parser.add_argument("--user", type=int, default=1)
     recommend_parser.add_argument("--number", type=int, default=20)
     recommend_parser.set_defaults(function=recommend_command)
+    package_parser = subparsers.add_parser(
+        "package",
+        help="Package trained artifacts into one ZIP file.",
+    )
+    package_parser.add_argument("--output", default="pytorch_hybrid_outputs_full")
+    package_parser.add_argument(
+        "--archive",
+        help="Optional destination ZIP path. Defaults beside the output directory.",
+    )
+    package_parser.set_defaults(function=package_command)
     update_parser = subparsers.add_parser(
     "update",
     help="Incrementally update the saved model."
